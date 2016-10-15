@@ -1,0 +1,4 @@
+# for vim temp files
+*~
+*.swp
+*.swo
