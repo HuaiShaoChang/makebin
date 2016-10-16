@@ -13,10 +13,9 @@ It uses **vim** as default editor.
 
 ## Installation
 ```bash
-cd ~
-git clone https://github.com/huaishaochang/makebin
-cd makebin
-. ./install
+cd ~ && git clone https://github.com/huaishaochang/makebin
+cd makebin && . ./install
+cd ~ && rm -r makebin
 ```
 
 ## Usage
