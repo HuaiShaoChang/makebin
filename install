@@ -1,0 +1,83 @@
+#!/bin/bash
+
+abort() {
+    echo $(tput setaf 1)abort installation!$(tput sgr0)
+    exit $1
+}
+
+if [ -e ~/bin/makebin ]; then
+    if cmp ./makebin ~/bin/makebin; then
+        echo makebin is already installed!
+        exit 0
+    else
+        echo there is another makebin command in your local bin directory!
+        abort 1
+    fi
+fi
+
+localBinIsNotExist() {
+    [ -d $HOME/bin ] && return 1
+    return 0
+}
+
+localBinIsNotInPATH() {
+    isContained=false
+    IFS=:
+    for i in $PATH; do
+        [ $i = $HOME/bin ] && isContained=true
+    done
+    [ isContained ] && return 1
+    return 0
+}
+
+echo checking whether local user bin directory is exist...
+if localBinIsNotExist; then
+    echo local user bin directory is not exist.
+    echo creating local user bin directory...
+    mkdir $HOME/bin
+
+    if localBinIsNotExist; then
+        echo failed to create local user bin directory!
+        abort 2
+    fi
+
+    echo create success!
+else echo local user bin directory is exist!
+fi; echo
+
+echo checing whether local user bin directory is in your PATH variable...
+if localBinIsNotInPATH; then
+    echo $HOME/bin is not in your \$PATH!
+    echo adding $HOME/bin to your \$PATH...
+    echo PATH=\$HOME/bin:\$PATH >> ~/.profile
+    PATH=$HOME/bin:$PATH
+
+    if localBinIsNotInPATH; then
+        echo failed to add $HOME/bin to your \$PATH
+        abort 3
+    fi
+
+    echo add success!
+else echo local user bin directory is in your PATH variable!
+fi; echo
+
+echo installing \"makebin\" command......
+cp ./makebin ~/bin
+if [ -e ~/bin/makebin ]; then
+    if cmp ./makebin ~/bin/makebin; then
+        chmod +x ~/bin/makebin
+        if [ -x ~/bin/makebin ]; then
+            echo install success!
+        else
+            echo install fail!
+            abort 6
+        fi
+    else
+        echo install fail!
+        abort 5
+    fi
+else
+    echo install fail!
+    abort 4
+fi
+
